@@ -2,10 +2,10 @@
 extern crate rocket;
 use askama::Template;
 
-use rocket::{fs::NamedFile, response::content::RawHtml};
+use rocket::response::content::{RawHtml, RawJavaScript};
 
 use enigo::{Enigo, Key, KeyboardControllable};
-use std::{path::Path, thread, time::Duration};
+use std::{thread, time::Duration};
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -36,8 +36,8 @@ fn press_key(text: String) -> Option<String> {
 }
 
 #[get("/index.js")]
-async fn js() -> Option<NamedFile> {
-    NamedFile::open(Path::new("templates/index.js")).await.ok()
+async fn js() -> RawJavaScript<&'static str> {
+    RawJavaScript(include_str!("../templates/index.js"))
 }
 
 #[launch]
