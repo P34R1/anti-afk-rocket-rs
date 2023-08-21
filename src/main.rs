@@ -3,6 +3,7 @@ extern crate rocket;
 use askama::Template;
 
 use rocket::response::content::{RawHtml, RawJavaScript};
+use rocket::serde::{json::Json, Serialize};
 
 use enigo::{Enigo, Key, KeyboardControllable};
 use std::{thread, time::Duration};
@@ -24,15 +25,26 @@ fn index() -> RawHtml<String> {
     RawHtml(rendered_template)
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct KeyPress {
+    pressed_key: Option<String>,
+}
+
 #[get("/press/<text>")]
-fn press_key(text: String) -> Option<String> {
-    let key = text.chars().next()?;
-    let mut enigo = Enigo::new();
+fn press_key(text: String) -> Json<KeyPress> {
+    if let Some(key) = text.chars().next() {
+        let mut enigo = Enigo::new();
 
-    thread::sleep(Duration::from_secs(1));
-    enigo.key_click(Key::Layout(key));
+        thread::sleep(Duration::from_secs(1));
+        enigo.key_click(Key::Layout(key));
 
-    Some(String::from(key))
+        let pressed_key = Some(String::from(key));
+        Json(KeyPress { pressed_key })
+    } else {
+        let pressed_key = None;
+        Json(KeyPress { pressed_key })
+    }
 }
 
 #[get("/index.js")]
