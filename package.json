@@ -4,9 +4,11 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
+        "dev:frontend": "vite",
+        "dev:backend": "cargo watch -cx run",
+        "build:frontend": "tsc && vite build",
+        "build:backend": "cargo build --release",
+        "preview": "cargo run"
     },
     "devDependencies": {
         "typescript": "^5.0.2",
