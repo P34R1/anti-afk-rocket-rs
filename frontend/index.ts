@@ -1,9 +1,10 @@
-let pressKeyForm = document.getElementById("pressKey")
+let pressKeyForm = document.querySelector<HTMLFormElement>("form#pressKey")
 
-pressKeyForm.addEventListener("submit", function (event) {
+pressKeyForm?.addEventListener("submit", function (event) {
     event.preventDefault() // Prevent the default form submission
 
-    const inputValue = document.getElementById("key").value
+    const inputValue =
+        document.querySelector<HTMLInputElement>("input#key")?.value ?? ""
 
     // Send POST request using Fetch API
     fetch(`/api/press/${inputValue}`, {

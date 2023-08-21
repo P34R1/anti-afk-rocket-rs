@@ -2,11 +2,12 @@
 extern crate rocket;
 use askama::Template;
 
-use rocket::response::content::{RawHtml, RawJavaScript};
-use rocket::response::status::NotFound;
-use rocket::serde::{json::Json, Serialize};
+use rocket::{
+    response::{content::RawHtml, status::NotFound},
+    serde::{json::Json, Serialize},
+};
 
-use enigo::{Enigo, Key, KeyboardControllable};
+use enigo::{Enigo, KeyboardControllable};
 use std::{thread, time::Duration};
 
 #[derive(Template)]
@@ -53,14 +54,9 @@ fn press_key(text: String) -> Result<Json<KeyPress>, NotFound<Json<FailedKeyPres
     }
 }
 
-#[get("/index.js")]
-async fn js() -> RawJavaScript<&'static str> {
-    RawJavaScript(include_str!("../templates/index.js"))
-}
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index, js])
+        .mount("/", routes![index])
         .mount("/api", routes![press_key])
 }
