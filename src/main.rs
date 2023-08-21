@@ -3,6 +3,7 @@ extern crate rocket;
 use askama::Template;
 
 use rocket::response::content::{RawHtml, RawJavaScript};
+use rocket::response::status::NotFound;
 use rocket::serde::{json::Json, Serialize};
 
 use enigo::{Enigo, Key, KeyboardControllable};
@@ -28,22 +29,27 @@ fn index() -> RawHtml<String> {
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 struct KeyPress {
-    pressed_key: Option<String>,
+    pressed_keys: String,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct FailedKeyPress {
+    err_text: String,
 }
 
 #[get("/press/<text>")]
-fn press_key(text: String) -> Json<KeyPress> {
-    if let Some(key) = text.chars().next() {
+fn press_key(text: String) -> Result<Json<KeyPress>, NotFound<Json<FailedKeyPress>>> {
+    if text.is_empty() {
+        let err_text = String::from("no key given");
+        Err(NotFound(Json(FailedKeyPress { err_text })))
+    } else {
         let mut enigo = Enigo::new();
 
         thread::sleep(Duration::from_secs(1));
-        enigo.key_click(Key::Layout(key));
+        enigo.key_sequence(&text);
 
-        let pressed_key = Some(String::from(key));
-        Json(KeyPress { pressed_key })
-    } else {
-        let pressed_key = None;
-        Json(KeyPress { pressed_key })
+        Ok(Json(KeyPress { pressed_keys: text }))
     }
 }
 
