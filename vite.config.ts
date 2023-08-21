@@ -11,35 +11,13 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                dir: resolve(__dirname, "templates"), // Adjust the output directory as needed
+                dir: resolve(__dirname, "templates"),
             },
         },
     },
     resolve: {
         alias: {
-            // "@": fileURLToPath(new URL("./src/", import.meta.url)),
-            "@": resolve("./frontend/"),
+            "@": resolve(__dirname, "frontend"),
         },
     },
 })
-// export default defineConfig({
-//     build: {
-//         rollupOptions: {
-//             input: {
-//                 main: resolve(__dirname, "index.html"), // Adjust the path as needed
-//                 // main: resolve(__dirname, "src", "index.ts"), // Adjust the path as needed
-//             },
-//             output: {
-//                 dir: resolve(__dirname, "templates"), // Adjust the output directory as needed
-//                 format: "iife",
-//                 entryFileNames: "index.js",
-//             },
-//         },
-//     },
-//     resolve: {
-//         alias: {
-//             // "@": fileURLToPath(new URL("./src/", import.meta.url)),
-//             "@": resolve("./src-frontend/"),
-//         },
-//     },
-// })
