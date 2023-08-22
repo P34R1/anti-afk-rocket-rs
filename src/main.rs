@@ -1,14 +1,9 @@
 #[macro_use]
 extern crate rocket;
 use askama::Template;
+use rocket::response::content::RawHtml;
 
-use rocket::{
-    response::{content::RawHtml, status::NotFound},
-    serde::{json::Json, Serialize},
-};
-
-use enigo::{Enigo, KeyboardControllable};
-use std::{thread, time::Duration};
+mod api;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -27,36 +22,14 @@ fn index() -> RawHtml<String> {
     RawHtml(rendered_template)
 }
 
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct KeyPress {
-    pressed_keys: String,
-}
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct FailedKeyPress {
-    err_text: String,
-}
-
-#[get("/press/<text>")]
-fn press_key(text: String) -> Result<Json<KeyPress>, NotFound<Json<FailedKeyPress>>> {
-    if text.is_empty() {
-        let err_text = String::from("no key given");
-        Err(NotFound(Json(FailedKeyPress { err_text })))
-    } else {
-        let mut enigo = Enigo::new();
-
-        thread::sleep(Duration::from_secs(1));
-        enigo.key_sequence(&text);
-
-        Ok(Json(KeyPress { pressed_keys: text }))
-    }
+#[get("/favicon.ico")]
+fn favicon() -> &'static [u8] {
+    include_bytes!("../favicon.ico")
 }
 
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
-        .mount("/api", routes![press_key])
+        .mount("/", routes![index, favicon])
+        .mount("/api", api::get_routes())
 }
