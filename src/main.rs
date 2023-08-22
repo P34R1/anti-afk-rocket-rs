@@ -27,9 +27,14 @@ fn favicon() -> &'static [u8] {
     include_bytes!("../favicon.ico")
 }
 
+mod key_handler;
+
 #[launch]
 fn rocket() -> _ {
+    let key_handler_state = key_handler::KeyHandler;
+
     rocket::build()
+        .manage(key_handler_state)
         .mount("/", routes![index, favicon])
         .mount("/api", api::get_routes())
 }
