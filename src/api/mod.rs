@@ -1,5 +1,5 @@
-pub(crate) mod presskey;
+pub(crate) mod repeatkey;
 
 pub fn get_routes() -> std::vec::Vec<rocket::Route> {
-    routes![presskey::press_key]
+    routes![repeatkey::repeat_key, repeatkey::stop_repeating]
 }
