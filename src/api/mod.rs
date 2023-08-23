@@ -1,3 +1,4 @@
+pub(crate) mod key_handler;
 pub(crate) mod repeatkey;
 
 pub fn get_routes() -> std::vec::Vec<rocket::Route> {

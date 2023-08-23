@@ -5,8 +5,6 @@ use std::{
     time::Duration,
 };
 
-// use crate::api::presskey::{FailedKeyPress, KeyPress};
-
 #[derive(Debug, PartialEq)]
 pub enum KeyState {
     Idle,

@@ -1,6 +1,6 @@
 use rocket::State;
 
-use crate::key_handler::KeyHandler;
+use crate::api::key_handler::KeyHandler;
 
 #[derive(FromForm)]
 pub struct Repeat<'r> {

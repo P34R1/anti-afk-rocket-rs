@@ -4,11 +4,10 @@ extern crate rocket;
 mod main_page;
 
 mod api;
-mod key_handler;
 
 #[launch]
 fn rocket() -> _ {
-    let key_handler_state = key_handler::KeyHandler::new();
+    let key_handler_state = api::key_handler::KeyHandler::new();
 
     rocket::build()
         .manage(key_handler_state)
