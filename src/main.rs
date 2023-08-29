@@ -2,8 +2,8 @@
 extern crate rocket;
 
 mod api;
+mod static_files;
 
-use rocket::response::content::RawCss;
 use rocket_dyn_templates::{context, Template};
 
 #[get("/")]
@@ -13,16 +13,6 @@ fn index() -> Template {
     Template::render("index", context! { title, text })
 }
 
-#[get("/favicon.ico")]
-fn icon() -> &'static [u8] {
-    include_bytes!("../static/favicon.ico")
-}
-
-#[get("/style.css")]
-fn css() -> RawCss<&'static str> {
-    RawCss(include_str!("../static/style.css"))
-}
-
 #[launch]
 fn rocket() -> _ {
     let key_handler_state = api::key_handler::KeyHandler::new();
@@ -30,7 +20,7 @@ fn rocket() -> _ {
     rocket::build()
         .manage(key_handler_state)
         .mount("/", routes![index])
-        .mount("/static", routes![icon, css])
+        .mount("/static", static_files::get_routes())
         .mount("/api", api::get_routes())
         .attach(Template::fairing())
 }
