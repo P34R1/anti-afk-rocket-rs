@@ -1,6 +1,7 @@
 use rocket::{
-    response::status::NotFound,
-    serde::{json::Json, Serialize},
+    // response::status::NotFound,
+    // json::Json,
+    serde::Serialize,
     State,
 };
 
@@ -18,14 +19,17 @@ pub struct FailedKeyPress {
     pub(crate) err_text: String,
 }
 
-#[get("/press/<text>")]
-pub fn press_key(
-    key_handler: &State<KeyHandler>,
-    text: String,
-) -> Result<Json<KeyPress>, NotFound<Json<FailedKeyPress>>> {
-    key_handler
-        .press_keys(text)
-        .map(Json)
-        .map_err(Json)
-        .map_err(NotFound)
+#[derive(FromForm)]
+pub struct Press<'r> {
+    #[field(validate = len(1..=1))]
+    letter: &'r str,
+}
+
+#[get("/press?<query..>")]
+pub fn press_key(key_handler: &State<KeyHandler>, query: Press)
+// -> Result<Json<KeyPress>, NotFound<Json<FailedKeyPress>>>
+{
+    let letter = query.letter.chars().next().expect("Next Character");
+    let key = enigo::Key::Layout(letter);
+    key_handler.press_key(key)
 }
