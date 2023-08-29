@@ -12,6 +12,7 @@
     <body>
         <main>
             <h1>{{ text }}</h1>
+            {% include "repeat-key" %}
         </main>
     </body>
 </html>

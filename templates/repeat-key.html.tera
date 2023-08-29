@@ -1,0 +1,21 @@
+<form
+    hx-get="/api/repeat/start"
+    hx-params="letter, interval_seconds"
+    hx-target="#repeat-results"
+    hx-swap="innerHTML"
+    hx-on::after-request="setTimeout(() => document.querySelector('#repeat-results').innerHTML = 'Repeat key', 2000)">
+    <label for="letter">Key to repeat.</label>
+    <input
+        type="text"
+        id="letter"
+        name="letter"
+        hx-on:input="this.value = this.value.slice(-1)" />
+    <button type="submit" id="repeat-results">Repeat key</button>
+    <button
+        id="stopRepeating"
+        hx-get="/api/repeat/stop"
+        hx-swap="innerHTML"
+        hx-on::after-request="setTimeout(() => document.querySelector('#stopRepeating').innerHTML = 'Stop Repeating', 2000)">
+        Stop Repeating
+    </button>
+</form>

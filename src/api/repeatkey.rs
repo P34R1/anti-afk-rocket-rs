@@ -16,12 +16,12 @@ pub fn start_repeating(key_handler: &State<KeyHandler>, query: Repeat) -> RawHtm
         query.interval_seconds,
     );
 
-    RawHtml("<p>Successfully Started Repeating</p>")
+    RawHtml("Successfully Started Repeating")
 }
 
 #[get("/repeat/stop")]
 pub fn stop_repeating(key_handler: &State<KeyHandler>) -> RawHtml<&'static str> {
     key_handler.stop_repeating();
 
-    RawHtml("<p>Successfully Stopped Repeating</p>")
+    RawHtml("Successfully Stopped Repeating")
 }
