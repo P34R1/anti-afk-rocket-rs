@@ -1,5 +1,0 @@
-<form id="pressKey">
-    <label for="key">Keys to press.</label>
-    <input type="text" name="key" id="key" />
-    <button type="submit">Press key</button>
-</form>

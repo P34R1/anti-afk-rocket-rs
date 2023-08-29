@@ -12,7 +12,6 @@
     <body>
         <main>
             <h1>{{ text }}</h1>
-            {% include "press-key" %}
         </main>
     </body>
 </html>
