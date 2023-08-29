@@ -10,7 +10,7 @@ use rocket_dyn_templates::{context, Template};
 fn index() -> Template {
     let title = String::from("Index");
     let text = String::from("Hello, from Rust!");
-    Template::render("index-raw", context! { title, text })
+    Template::render("index", context! { title, text })
 }
 
 #[get("/favicon.ico")]
