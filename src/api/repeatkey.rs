@@ -1,6 +1,12 @@
+use enigo::{Enigo, KeyboardControllable};
 use rocket::{response::content::RawHtml, State};
+use std::{
+    sync::{Arc, RwLock},
+    thread,
+    time::Duration,
+};
 
-use crate::api::key_handler::KeyHandler;
+use crate::api::key_types::KeyState;
 
 #[derive(FromForm)]
 pub struct Repeat<'r> {
@@ -10,18 +16,50 @@ pub struct Repeat<'r> {
 }
 
 #[get("/repeat/start?<query..>")]
-pub fn start_repeating(key_handler: &State<KeyHandler>, query: Repeat) -> RawHtml<&'static str> {
-    key_handler.start_repeating(
-        enigo::Key::Layout(query.letter.chars().next().unwrap()),
-        query.interval_seconds,
-    );
+pub fn start_repeating(
+    key_state: &State<Arc<RwLock<KeyState>>>,
+    query: Repeat,
+) -> RawHtml<&'static str> {
+    let Repeat {
+        letter,
+        interval_seconds,
+    } = query;
+    let key = enigo::Key::Layout(letter.chars().next().expect("get letter"));
+
+    if *key_state.read().expect("read state") == KeyState::Repeating(key, query.interval_seconds) {
+        return RawHtml("Already Started Repeating Same Keys");
+    }
+    *key_state.write().expect("write to state") = KeyState::Repeating(key, query.interval_seconds);
+
+    let state = Arc::clone(key_state.inner());
+
+    thread::spawn(move || {
+        let mut enigo = Enigo::new();
+        loop {
+            let (repeat_key, interval) = match *state.read().unwrap() {
+                // If anything changes
+                KeyState::Repeating(repeat_key, interval)
+                    if repeat_key != key || interval != interval_seconds =>
+                {
+                    break
+                }
+
+                KeyState::Repeating(key, interval) => (key, interval),
+                KeyState::Idle => break,
+            };
+
+            enigo.key_click(repeat_key);
+            thread::sleep(Duration::from_secs(interval));
+        }
+    });
 
     RawHtml("Successfully Started Repeating")
 }
 
 #[get("/repeat/stop")]
-pub fn stop_repeating(key_handler: &State<KeyHandler>) -> RawHtml<&'static str> {
-    key_handler.stop_repeating();
+pub fn stop_repeating(key_state: &State<Arc<RwLock<KeyState>>>) -> RawHtml<&'static str> {
+    let mut state = key_state.write().expect("write to state");
+    *state = KeyState::Idle;
 
     RawHtml("Successfully Stopped Repeating")
 }
