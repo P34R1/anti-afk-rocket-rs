@@ -22,11 +22,6 @@ impl KeyHandler {
         }
     }
 
-    pub fn press_key(&self, key: enigo::Key) {
-        let mut enigo = Enigo::new();
-        enigo.key_click(key);
-    }
-
     pub fn start_repeating(&self, key: enigo::Key, interval_seconds: u64) {
         let state = self.state.clone();
 
