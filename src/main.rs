@@ -1,3 +1,5 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 #[macro_use]
 extern crate rocket;
 
@@ -23,6 +25,9 @@ fn index() -> RawHtml<Template> {
 fn rocket() -> _ {
     let figment = figments::get_figment();
     let key_state = Arc::new(RwLock::new(KeyState::Idle));
+
+    #[cfg(not(debug_assertions))]
+    webbrowser::open("http://127.0.0.1:8000").expect("open browser");
 
     let rocket_build = rocket::custom(figment)
         .manage(key_state)
