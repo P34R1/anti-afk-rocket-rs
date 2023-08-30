@@ -22,6 +22,29 @@ body {
     min-height: 100vh;
 }
 
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    text-align: center;
+}
+
 header {
     position: relative;
     margin: 20px;
