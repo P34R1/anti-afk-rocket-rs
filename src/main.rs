@@ -4,10 +4,10 @@ extern crate rocket;
 mod api;
 mod setup;
 
-use rocket::response::content::RawHtml;
+use api::key_types::KeyState;
 use setup::{figments, static_files, templates};
 
-use api::key_types::KeyState;
+use rocket::response::content::RawHtml;
 
 use rocket_dyn_templates::{context, Template};
 use std::sync::{Arc, RwLock};
