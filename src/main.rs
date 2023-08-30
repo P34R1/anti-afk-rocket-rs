@@ -14,8 +14,8 @@ use std::sync::{Arc, RwLock};
 
 #[get("/")]
 fn index() -> RawHtml<Template> {
-    let title = String::from("Index");
-    let text = String::from("Hello, from Rust!");
+    let title = String::from("Anti Afk");
+    let text = String::from("Anti Afk Utility!");
     RawHtml(Template::render("index", context! { title, text }))
 }
 
