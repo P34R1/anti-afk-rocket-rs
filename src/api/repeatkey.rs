@@ -1,5 +1,5 @@
 use enigo::{Enigo, KeyboardControllable};
-use rocket::{response::content::RawHtml, State};
+use rocket::State;
 use std::{
     sync::{Arc, RwLock},
     thread,
@@ -16,10 +16,7 @@ pub struct Repeat<'r> {
 }
 
 #[get("/repeat/start?<query..>")]
-pub fn start_repeating(
-    key_state: &State<Arc<RwLock<KeyState>>>,
-    query: Repeat,
-) -> RawHtml<&'static str> {
+pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) -> &'static str {
     let Repeat {
         letter,
         interval_seconds,
@@ -27,7 +24,7 @@ pub fn start_repeating(
     let key = enigo::Key::Layout(letter.chars().next().expect("get letter"));
 
     if *key_state.read().expect("read state") == KeyState::Repeating(key, query.interval_seconds) {
-        return RawHtml("Already Started Repeating Same Keys");
+        return "Already Started Repeating Same Keys";
     }
     *key_state.write().expect("write to state") = KeyState::Repeating(key, query.interval_seconds);
 
@@ -53,13 +50,13 @@ pub fn start_repeating(
         }
     });
 
-    RawHtml("Successfully Started Repeating")
+    "Successfully Started Repeating"
 }
 
 #[get("/repeat/stop")]
-pub fn stop_repeating(key_state: &State<Arc<RwLock<KeyState>>>) -> RawHtml<&'static str> {
+pub fn stop_repeating(key_state: &State<Arc<RwLock<KeyState>>>) -> &'static str {
     let mut state = key_state.write().expect("write to state");
     *state = KeyState::Idle;
 
-    RawHtml("Successfully Stopped Repeating")
+    "Successfully Stopped Repeating"
 }
