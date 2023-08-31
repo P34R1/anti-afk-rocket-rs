@@ -16,15 +16,15 @@ pub struct Repeat<'r> {
 }
 
 #[get("/repeat/start?<query..>")]
-pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) -> &'static str {
+pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) -> String {
     let Repeat {
         letter,
         interval_seconds,
     } = query;
     let key = enigo::Key::Layout(letter.chars().next().expect("get letter"));
 
-        return "Already Started Repeating Same Keys";
     if *key_state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
+        return format!("Already Repeating {}", letter);
     }
     *key_state.write().expect("write to state") = KeyState::Repeating(key, interval_seconds);
 
@@ -50,7 +50,7 @@ pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) 
         }
     });
 
-    "Successfully Started Repeating"
+    String::from("Successfully Started Repeating")
 }
 
 #[get("/repeat/stop")]
