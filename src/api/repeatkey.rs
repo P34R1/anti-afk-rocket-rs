@@ -23,10 +23,10 @@ pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) 
     } = query;
     let key = enigo::Key::Layout(letter.chars().next().expect("get letter"));
 
-    if *key_state.read().expect("read state") == KeyState::Repeating(key, query.interval_seconds) {
         return "Already Started Repeating Same Keys";
+    if *key_state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
     }
-    *key_state.write().expect("write to state") = KeyState::Repeating(key, query.interval_seconds);
+    *key_state.write().expect("write to state") = KeyState::Repeating(key, interval_seconds);
 
     let state = Arc::clone(key_state.inner());
 
