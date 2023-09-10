@@ -7,7 +7,7 @@ pub enum KeyState {
 mod close;
 mod repeatkey;
 
-pub fn get_routes() -> std::vec::Vec<rocket::Route> {
+pub fn get_api_routes() -> std::vec::Vec<rocket::Route> {
     routes![
         repeatkey::start_repeating,
         repeatkey::stop_repeating,

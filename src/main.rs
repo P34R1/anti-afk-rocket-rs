@@ -6,8 +6,8 @@ extern crate rocket;
 mod api;
 mod setup;
 
-use api::KeyState;
-use setup::{figments, static_files, templates};
+use api::{get_api_routes, KeyState};
+use setup::{get_figment, get_static_routes, templates};
 
 use rocket::response::content::RawHtml;
 
@@ -23,7 +23,7 @@ fn index() -> RawHtml<Template> {
 
 #[launch]
 fn rocket() -> _ {
-    let figment = figments::get_figment();
+    let figment = get_figment();
     let key_state = Arc::new(RwLock::new(KeyState::Idle));
 
     #[cfg(not(debug_assertions))]
@@ -32,7 +32,7 @@ fn rocket() -> _ {
     rocket::custom(figment)
         .manage(key_state)
         .mount("/", routes![index])
-        .mount("/static", static_files::get_routes())
-        .mount("/api", api::get_routes());
-        .attach(Template::custom(templates::templates))
+        .mount("/static", get_static_routes())
+        .mount("/api", get_api_routes())
+        .attach(Template::custom(templates))
 }
