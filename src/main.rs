@@ -29,11 +29,10 @@ fn rocket() -> _ {
     #[cfg(not(debug_assertions))]
     webbrowser::open("http://127.0.0.1:8000").expect("open browser");
 
-    let rocket_build = rocket::custom(figment)
+    rocket::custom(figment)
         .manage(key_state)
         .mount("/", routes![index])
         .mount("/static", static_files::get_routes())
         .mount("/api", api::get_routes());
-
-    templates::setup_templates(rocket_build)
+        .attach(Template::custom(templates::templates))
 }
