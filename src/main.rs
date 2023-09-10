@@ -6,7 +6,7 @@ extern crate rocket;
 mod api;
 mod setup;
 
-use api::key_types::KeyState;
+use api::KeyState;
 use setup::{figments, static_files, templates};
 
 use rocket::response::content::RawHtml;

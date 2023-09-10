@@ -1,9 +1,7 @@
-pub(crate) mod key_types {
-    #[derive(Debug, PartialEq)]
-    pub enum KeyState {
-        Idle,
-        Repeating(enigo::Key, u64),
-    }
+#[derive(Debug, PartialEq)]
+pub enum KeyState {
+    Idle,
+    Repeating(enigo::Key, u64),
 }
 
 mod close;

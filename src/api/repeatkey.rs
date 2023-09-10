@@ -6,7 +6,7 @@ use std::{
     time::Duration,
 };
 
-use crate::api::key_types::KeyState;
+use super::KeyState;
 
 #[derive(FromForm)]
 pub struct Repeat<'r> {
