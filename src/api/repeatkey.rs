@@ -26,6 +26,7 @@ pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) 
     if *key_state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
         return format!("Already Repeating {}", letter);
     }
+
     *key_state.write().expect("write to state") = KeyState::Repeating(key, interval_seconds);
 
     let state = Arc::clone(key_state.inner());
@@ -33,17 +34,14 @@ pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) 
     thread::spawn(move || {
         let mut enigo = Enigo::new();
         loop {
-            let (repeat_key, interval) = match *state.read().unwrap() {
-                // If anything changes
-                KeyState::Repeating(repeat_key, interval)
-                    if repeat_key != key || interval != interval_seconds =>
-                {
-                    break
-                }
-
+            let (repeat_key, interval) = match *state.read().expect("read state") {
                 KeyState::Repeating(key, interval) => (key, interval),
                 KeyState::Idle => break,
             };
+
+            if (repeat_key, interval) != (key, interval_seconds) {
+                break;
+            }
 
             enigo.key_click(repeat_key);
             thread::sleep(Duration::from_secs(interval));
