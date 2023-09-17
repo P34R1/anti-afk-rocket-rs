@@ -1,6 +1,0 @@
-[default]
-address = "127.0.0.1"
-port = 8000
-ident = "AntiAfkBackend"
-ip_header = "X-Real-IP"  # set to `false` to disable
-cli_colors = true
