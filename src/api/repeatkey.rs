@@ -15,38 +15,53 @@ pub struct Repeat<'r> {
     interval_seconds: u64,
 }
 
+fn repeat_key(state: Arc<RwLock<KeyState>>, interval_seconds: u64, key: enigo::Key) {
+    let mut enigo = Enigo::new();
+    loop {
+        let (repeat_key, interval) = match *state.read().expect("read state") {
+            KeyState::Repeating(key, interval) => (key, interval),
+            KeyState::Idle => break,
+        };
+
+        if (repeat_key, interval) != (key, interval_seconds) {
+            break;
+        }
+
+        enigo.key_click(repeat_key);
+
+        thread::sleep(Duration::from_secs(interval));
+    }
+}
+
+fn handle_state(
+    key_state: &RwLock<KeyState>,
+    key: enigo::Key,
+    interval_seconds: u64,
+) -> Result<(), ()> {
+    if *key_state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
+        return Err(());
+    }
+
+    *key_state.write().expect("write to state") = KeyState::Repeating(key, interval_seconds);
+    Ok(())
+}
+
 #[get("/repeat/start?<query..>")]
 pub fn start_repeating(key_state: &State<Arc<RwLock<KeyState>>>, query: Repeat) -> String {
     let Repeat {
         letter,
         interval_seconds,
     } = query;
+
     let key = enigo::Key::Layout(letter.chars().next().expect("get letter"));
 
-    if *key_state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
+    if handle_state(key_state, key, interval_seconds).is_err() {
         return format!("Already Repeating {}", letter);
     }
 
-    *key_state.write().expect("write to state") = KeyState::Repeating(key, interval_seconds);
-
     let state = Arc::clone(key_state.inner());
 
-    thread::spawn(move || {
-        let mut enigo = Enigo::new();
-        loop {
-            let (repeat_key, interval) = match *state.read().expect("read state") {
-                KeyState::Repeating(key, interval) => (key, interval),
-                KeyState::Idle => break,
-            };
-
-            if (repeat_key, interval) != (key, interval_seconds) {
-                break;
-            }
-
-            enigo.key_click(repeat_key);
-            thread::sleep(Duration::from_secs(interval));
-        }
-    });
+    thread::spawn(move || repeat_key(state, interval_seconds, key));
 
     String::from("Successfully Started Repeating")
 }
