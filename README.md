@@ -1,4 +1,4 @@
-# Anti-AFK-rs
+# Anti-AFK-rocket-rs
 
 This project is a program with a website frontend. Rocket.rs is the webhosting framework used. The application will repeat the said key.
 
