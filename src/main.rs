@@ -9,11 +9,7 @@ mod setup;
 use api::{get_api_routes, KeyState};
 use setup::{get_static_routes, templates};
 
-use rocket::{
-    figment::{providers::Serialized, Figment},
-    response::content::RawHtml,
-    Config,
-};
+use rocket::{response::content::RawHtml, Config};
 
 use rocket_dyn_templates::{context, Template};
 use std::sync::{Arc, RwLock};
@@ -25,16 +21,12 @@ fn index() -> RawHtml<Template> {
     RawHtml(Template::render("index", context! { title, text }))
 }
 
-fn figment() -> Figment {
-    Config::figment().merge(Serialized::defaults(Config::default()))
-}
-
 #[launch]
 fn rocket() -> _ {
     let figment = if cfg!(debug_assertions) {
-        figment()
+        Config::figment()
     } else {
-        figment().merge(("template_dir", "."))
+        Config::figment().merge(("template_dir", "."))
     };
 
     let key_state = Arc::new(RwLock::new(KeyState::Idle));
