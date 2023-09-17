@@ -40,7 +40,10 @@ fn rocket() -> _ {
     let key_state = Arc::new(RwLock::new(KeyState::Idle));
 
     #[cfg(not(debug_assertions))]
-    webbrowser::open("http://127.0.0.1:8000").expect("open browser");
+    std::thread::spawn(|| {
+        std::thread::sleep(std::time::Duration::from_secs(2));
+        webbrowser::open("http://127.0.0.1:8000").expect("open browser");
+    });
 
     rocket::custom(figment)
         .manage(key_state)
