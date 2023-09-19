@@ -17,19 +17,10 @@ pub struct Repeat<'r> {
 
 fn repeat_key(state: Arc<RwLock<KeyState>>, interval_seconds: u64, key: enigo::Key) {
     let mut enigo = Enigo::new();
-    loop {
-        let (repeat_key, interval) = match *state.read().expect("read state") {
-            KeyState::Repeating(key, interval) => (key, interval),
-            KeyState::Idle => break,
-        };
+    while *state.read().expect("read state") == KeyState::Repeating(key, interval_seconds) {
+        enigo.key_click(key);
 
-        if (repeat_key, interval) != (key, interval_seconds) {
-            break;
-        }
-
-        enigo.key_click(repeat_key);
-
-        thread::sleep(Duration::from_secs(interval));
+        thread::sleep(Duration::from_secs(interval_seconds));
     }
 }
 
